@@ -18,6 +18,12 @@
             <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - ${method} - %msg%n</Pattern>
         </encoder>
 
+        <!-- 로그 필터 (warn 레벨만 출력하도록 필터링) -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>warn</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
         <!-- Rolling 정책 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 
