@@ -1,15 +1,48 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
+    <!-- 프로퍼티 설정 -->
     <property name="LOG_PATH" value="./logs"/>
 
+    <!-- Console Logger -->
     <appender name="SAMPLE" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>%d{HH:mm} %-5level %logger{36} - %msg%n</Pattern>
         </layout>
     </appender>
+
+    <!-- Rolling File Logger -->
+    <appender name="FILE_LOGGER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <!-- 출력 패턴 설정 -->
+        <encoder>
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - ${method} - %msg%n</Pattern>
+        </encoder>
+
+        <!-- Rolling 정책 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+
+            <!-- .gz 또는 .zip 을 넣으면 자동 일자별 로그 압축 -->
+            <fileNamePattern>${LOG_PATH}/logback.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- 로그 파일의 최대 용량 (KB, MB, GB) -->
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <!-- 일자별 로그 파일의 최대 생명 주기(일), 해당일 이상된 파일은 자동으로 제거 -->
+            <maxHistory>60</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 스프링 부트의 프로파일에 따른 로깅 전략 -->
     <springProfile name="local">
-        <logger name="com.example.logbackedu.controller.FooController" level="DEBUG">
+
+        <!-- 루트 경로의 로그 설정 -->
+        <root level="INFO">
             <appender-ref ref="SAMPLE"/>
+        </root>
+
+        <!-- 특정 클래스의 로그 설정 (패키지로 설정하면 해당 패키지 범위의 클래스들로 로그 설정) -->
+        <logger name="com.example.logbackedu.controller.FooController" level="WARN">
+            <appender-ref ref="FILE_LOGGER"/>
         </logger>
     </springProfile>
 </configuration>
